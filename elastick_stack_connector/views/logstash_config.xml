@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- View Form logstash_config -->
+        <record model="ir.ui.view" id="logstash_config_form">
+            <field name="name">logstash.config.form</field>
+            <field name="model">logstash.config</field>
+            <field name="arch" type="xml">
+                <form string="ElasticSearch Server">
+                    <header>
+                        <button string="Test &amp; Confirm" type="object" name="action_confirm"
+                                states="draft"/>
+                        <button string="Reset Confirmation" type="object" name="action_draft" states="confirm"/>
+                        <button string="Run Logstash Test" type="object" name="action_run_test" states="confirm"/>
+                        <button string="Validate Index" type="object" name="action_run_validate" states="confirm"/>
+                        <button string="Reset Validation" type="object" name="action_cancel_validate"
+                                confirm="This will delete your pipeline.conf from your settings in logstash and delete this index from kibana. Do you still want to proceed ?"
+                                states="validate"/>
+                        <button style="background-color: #eee" string="Log info" name="get_log_info"
+                                colspan="1" icon="fa-info-circle" states="confirm,validate"
+                                type="object"/>
+
+                        <button string="Help ?" type="object" name="action_need_help"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <widget name="web_ribbon" text="Archived" bg_color="bg-danger"
+                                    attrs="{'invisible': [('active', '=', True)]}"/>
+                        </div>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" required="1" placeholder="e.g. My Pipline Index"/>
+                            </h1>
+                        </div>
+
+
+                        <group>
+                            <group attrs="{'invisible':[('state', '!=', 'confirm')]}">
+                                <field name="update_log_info"/>
+                                <separator string="Log info" attrs="{'invisible':[('update_log_info', '!=', True)]}"/>
+                                <field name="nb_ligne_logfile" attrs="{'invisible':[('update_log_info', '!=', True)]}"/>
+                                <separator string="Log test result"
+                                           attrs="{'invisible':[('update_log_info', '!=', True)]}"/>
+                                <field name="size_logfile" attrs="{'invisible':[('update_log_info', '!=', True)]}"/>
+
+                            </group>
+                            <group string="File" attrs="{'invisible':[('state', '!=', 'validate')]}">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 no-margin-top">
+                                        <field name="filename" invisible="1"/>
+                                        <label for="file"/>
+                                        <field name="file" widget="binary" filename="filename"/>
+                                        <br></br>
+                                        <separator string="Infos"/>
+                                        <button style="background-color: #eee" string="Kibana" name="info_kibana"
+                                                colspan="1" icon="fa-info-circle"
+                                                type="object"/><!-- icon='fa-broom' -->
+                                        <button style="background-color: #eee" string="ElasticSearch"
+                                                name="info_elastic" colspan="1" icon="fa-info-circle"
+                                                type="object"/><!-- icon='fa-broom' -->
+                                        <button style="background-color: #eee" string="Logstash" name="info_logstash"
+                                                colspan="1" icon="fa-info-circle" type="object"/>
+                                        <br></br>
+                                        <div attrs="{'invisible':[('is_info_kibana', '!=', True)]}">
+                                            <br></br>
+                                            <p style="background-color: #eee">
+                                                Try from kiban :
+                                                <br></br>
+                                                GET _cat/indices
+                                                <br>
+                                                    GET indexName/_search
+                                                </br>
+                                            </p>
+                                        </div>
+
+                                        <div attrs="{'invisible':[('is_info_elastic', '!=', True)]}">
+                                            <br></br>
+                                            <p style="background-color: #eee">
+                                                curl -XGET "elasticServer:9200/IndexName/_search"
+                                                <br></br>
+                                                e.g ,for localhost
+                                                <br></br>
+                                                curl -XGET "http://localhost:9200/IndexName/_search"
+                                            </p>
+                                        </div>
+
+                                        <div attrs="{'invisible':[('is_info_logstash', '!=', True)]}">
+                                            <br></br>
+                                            <p style="background-color: #eee">
+                                                1) /etc/logstash/logstash.yml
+                                                <br/>
+                                                # ------------ Pipeline Configuration Settings --------------
+                                                <br/>
+                                                #
+                                                <br/>
+                                                # Where to fetch the pipeline configuration for the main pipeline
+                                                <br/>
+                                                #
+                                                <br/>
+                                                path.config: /etc/logstash/conf.d/*
+                                                <br/>
+                                                # Periodically check if the configuration has changed and reload the
+
+                                                pipeline
+                                                <br/>
+                                                # This can also be triggered manually through the SIGHUP signal
+                                                <br/>
+                                                #
+                                                <br/>
+                                                config.reload.automatic: true
+                                                <br/>
+                                                #
+                                                <br/>
+                                                # How often to check if the pipeline configuration has changed (in
+                                                seconds)
+                                                <br/>
+                                                #
+                                                <br/>
+                                                #config.reload.interval: 3s
+                                                <br/>
+                                                2) add jdbc_driver_library in
+                                                /usr/share/logstash/logstash-core/lib/jars
+                                                <br/>Why ???
+                                                <br/>
+                                                3) when we run the test :
+                                                <br/>
+                                                this should be defined
+                                                jdbc_driver_library => "../../postgresql-42.2.12.jar"
+                                                <br/>
+                                                when we make this index.conf in conf.d ,logstash service don't accept
+                                                external file ,
+                                                it detetct this pluqigin from logstash-core/lib/jars
+                                                for this reason we comment #jdbc_driver_library
+                                            </p>
+                                        </div>
+
+                                        <field name="is_info_kibana" invisible="1"/>
+                                        <field name="is_info_elastic" invisible="1"/>
+                                        <field name="is_info_logstash" invisible="1"/>
+                                    </div>
+                                </div>
+                            </group>
+                            <group string="From Kibana" attrs="{'invisible':[('state', '!=', 'validate')]}">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 no-margin-top">
+                                        <label for="hits_count"/>
+                                        <field name="hits_count"/>
+                                        <button name="get_hits" type="object"
+                                                class="fa fa-fw o_button_icon fa-refresh" string=""/>
+
+                                        <p style="background-color: #eee"
+                                           attrs="{'invisible':[('is_info_kibana', '!=', True)]}">
+                                            Try from kiban :
+                                            <br/>GET indexName/_search
+                                        </p>
+                                        <separator string="Actions"/>
+                                        <button style="background-color: #eee" name="delete_index" type="object"
+                                                string="Delete from Kibana" colspan="1" icon="fa-trash-o"/>
+
+                                        <p style="background-color: #eee"
+                                           attrs="{'invisible':[('is_info_kibana', '!=', True)]}">
+                                            Try from kiban :
+                                            <br/>DELETE indexName
+                                        </p>
+                                        <button style="background-color: #eee" name="delete_setting_index" type="object"
+                                                string="Delete from Config" colspan="1" icon="fa-trash-o"/>
+
+
+                                        <p style="background-color: #eee"
+                                           attrs="{'invisible':[('is_info_kibana', '!=', True)]}">
+                                            If this index contain a schedule, it will be create on the new execution.
+                                            <br/>
+                                            you can use this button to delete your pipeline.conf from your settings and
+                                            delete
+                                            this index from kibana
+                                        </p>
+                                        <button style="background-color: #eee" name="recreate_index" type="object"
+                                                string="ReCreate index" colspan="1" icon="fa-repeat"/>
+                                        <p style="background-color: #eee"
+                                           attrs="{'invisible':[('is_info_kibana', '!=', True)]}">
+                                            Add your pipeline.conf in your Path configuration file
+                                        </p>
+                                    </div>
+                                </div>
+                                <!--fa-info-circle-->
+                            </group>
+                        </group>
+                        <group style="background-color: #eee" attrs="{'invisible':[('state', '=', 'draft')]}">
+                            <div>
+                                <separator></separator>
+                                <field name="setting_data" style="background-color: #eee"
+                                       attrs="{'readonly': [('state', '!=', 'confirm')]}"/>
+                                <separator></separator>
+                            </div>
+                        </group>
+                        <group>
+                            <group>
+                                <separator></separator>
+                                <field name="active" invisible="1"></field>
+                                <field name="elastic_server_id" options="{'no_create': True,'no_edit': True}"
+                                       required="1" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                                <field name="db_setting_id" options="{'no_create': True,'no_edit': True}"
+                                       required="1" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                                <field name="statement_id" options="{'no_create': True,'no_edit': True}"
+                                       required="1" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                                <field name="index" placeholder="e.g. pipeline" required="1"
+                                       attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                                <field name="document_id" placeholder="%{id}" required="1"
+                                       attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                                <field name="jdbc_default_timezone" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                                <field name="schedule" placeholder="e.g. * * * * * or 1 * * * * or .... "
+                                       attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                                <field name="use_column_value" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                                <field name="tracking_column" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                                <field name="tracking_column_type" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                                <field name="user_id" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"
+                                       attrs="{'invisible':[('state', '!=', 'draft')]}"/>
+                                <field name="require_index_help" invisible="1"/>
+                            </group>
+
+                            <group>
+                                <div class="row">
+                                    <div class="col-lg-11 offset-lg-1 col-md-12 no-margin-top"
+                                         attrs="{'invisible':[('require_index_help', '!=', True)]}"
+                                         style="background-color: #eee">
+                                        <p class="text-center" style="font-weight: bold;">Help Jdbc input plugin
+                                        </p>
+                                        <div>
+                                            <div class="oe_account_help">
+                                                <br></br>
+                                                <br></br>
+                                                <p class="text-left" style="font-weight: bold;">
+                                                    State
+                                                    <separator></separator>
+                                                    The plugin will persist the sql_last_value parameter in the form of
+                                                    a
+                                                    metadata file stored in the configured last_run_metadata_path. Upon
+                                                    query execution, this file will be updated with the current value of
+                                                    sql_last_value. Next time the pipeline starts up, this value will be
+                                                    updated by reading from the file. If clean_run is set to true, this
+                                                    value will be ignored and sql_last_value will be set to Jan 1, 1970,
+                                                    or
+                                                    0 if use_column_value is true, as if no query has ever been
+                                                    executed.
+                                                </p>
+                                                <br></br>
+                                                <p class="text-left" style="font-weight: bold;">
+
+                                                    Configuring multiple SQL statements
+                                                    <separator></separator>
+                                                    Configuring multiple SQL statements is useful when there is a need
+                                                    to query and ingest data from different database tables or views. It
+                                                    is possible to define separate Logstash configuration files for each
+                                                    statement or to define multiple statements in a single configuration
+                                                    file. When using multiple statements in a single Logstash
+                                                    configuration file, each statement has to be defined as a separate
+                                                    jdbc input (including jdbc driver, connection string and other
+                                                    required parameters).
+
+                                                    Please note that if any of the statements use the sql_last_value
+                                                    parameter (e.g. for ingesting only data changed since last run),
+                                                    each input should define its own last_run_metadata_path parameter.
+                                                    Failure to do so will result in undesired behaviour, as all inputs
+                                                    will store their state to the same (default) metadata file,
+                                                    effectively overwriting each other’s sql_last_value.
+
+                                                    Predefined Parametersedit
+                                                    Some parameters are built-in and can be used from within your
+                                                    queries. Here is the list:
+
+                                                    sql_last_value
+
+                                                    The value used to calculate which rows to query. Before any query is
+                                                    run, this is set to Thursday, 1 January 1970, or 0 if
+                                                    use_column_value is true and tracking_column is set. It is updated
+                                                    accordingly after subsequent queries are run.
+                                                    <br></br>
+                                                    Example:
+                                                    <br></br>
+                                                    input {
+                                                    <br></br>
+                                                    jdbc {
+                                                    <br></br>
+                                                    statement => "SELECT id, mycolumn1, mycolumn2 FROM my_table WHERE id
+                                                    > :sql_last_value"
+                                                    <br></br>
+                                                    use_column_value => true
+                                                    <br></br>
+                                                    tracking_column => "id"
+                                                    <br></br>
+                                                    # ... other configuration bits
+                                                    <br></br>
+                                                    }
+                                                    }
+
+
+                                                </p>
+                                                <p class="oe_account_font_help"
+                                                   style="color: grey;border-top: 2px solid;border-bottom: 2px solid;">
+                                                    input
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">input {</p>
+                                                <p class="text-left" style="font-weight: bold;">jdbc {</p>
+                                                <p class="text-left" style="font-weight: bold;">jdbc_driver_library =>
+                                                    "YourElasticNoeud/../postgresql-42.2.12.jar"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">jdbc_driver_class =>
+                                                    "org.postgresql.Driver"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">jdbc_connection_string
+                                                    => "jdbc:postgresql://OdooServerURL:5432/BaseName"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">jdbc_user => "xxxx"</p>
+                                                <p class="text-left" style="font-weight: bold;">jdbc_password =>
+                                                    "xxxx"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">schedule => "* * * *
+                                                    *"(1)
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">statement => "SELECT *
+                                                    FROM crm_lead WHERE write_date > :sql_last_value"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">use_column_value =>
+                                                    true(2)
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">tracking_column =>
+                                                    "write_date"(3)
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">tracking_column_type
+                                                    =>
+                                                    "timestamp"(4)
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">last_run_metadata_path
+                                                    => "YourElasticNoeud/../.logstash_user_jdbc_last_run"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">jdbc_paging_enabled =>
+                                                    "true"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">jdbc_page_size =>
+                                                    50000
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">jdbc_default_timezone =>
+                                                    "TimeZone"(5)
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">}</p>
+                                                <p class="text-left" style="font-weight: bold;">}</p>
+
+
+                                                <p class="oe_account_font_help"
+                                                   style="color: grey;border-top: 2px solid;border-bottom: 2px solid;">
+                                                    output
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">output {</p>
+                                                <p class="text-left" style="font-weight: bold;">elasticsearch {</p>
+                                                <p class="text-left" style="font-weight: bold;">hosts =>
+                                                    "http://localhost:9200"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">index => "pistes"</p>
+                                                <p class="text-left" style="font-weight: bold;">type => "Lead"</p>
+                                                <p class="text-left" style="font-weight: bold;">document_id => "%{id}"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">user => elastic</p>
+                                                <p class="text-left" style="font-weight: bold;">}}</p>
+                                                <br></br>
+                                                <p class="text-left" style="font-weight: bold;"># Test :result on json
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">#output{# stdout { codec
+                                                    => json_lines }}
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">
+                                                    (1)schedule
+                                                    <br/>
+                                                    schedule => '0 * * * *'
+                                                    <br></br>
+                                                    will execute on the 0th minute of every hour every day.
+                                                    <separator></separator>
+                                                    (2)tracking_column
+                                                    <br/>
+                                                    Value type is string
+                                                    There is no default value for this setting.
+                                                    The column whose value is to be tracked if use_column_value is set
+                                                    to true
+                                                    <br/>e.g : tracking_column => "id" (id should
+                                                    be present in your
+                                                    statetment
+                                                    select id ,.....
+                                                    <br/>
+                                                    statement => "SELECT id, mycolumn1,
+                                                    mycolumn2 FROM my_table WHERE id
+                                                    > :sql_last_value"
+                                                    <br/>
+                                                    statement => "SELECT t.id, t.mycolumn1,
+                                                    mycolumn2 FROM my_table as t WHERE t.id
+                                                    > :sql_last_value"
+                                                    <separator></separator>
+                                                    WHERE t.write_date
+                                                    > :sql_last_value"
+                                                    <separator></separator>
+                                                    WHERE id
+                                                    > :sql_last_value"
+                                                    <br></br>
+                                                    ==>
+                                                    WHERE t.id
+                                                    > :sql_last_value"
+                                                    <separator></separator>
+                                                    (3)tracking_column_type
+                                                    <br/>
+                                                    Value can be any of: numeric, timestamp
+                                                    Default value is "numeric"
+                                                    Type of tracking column. Currently only "numeric" and "timestamp"
+                                                    <separator></separator>
+                                                    (4) use_column_value
+                                                    <br/>
+                                                    Value type is boolean
+                                                    Default value is false
+                                                    When set to true, uses the defined tracking_column value as the
+                                                    :sql_last_value. When set to false, :sql_last_value reflects the
+                                                    last time the query was executed.
+
+                                                </p>
+
+                                                <separator></separator>
+                                                <p style="font-weight: bold;">(5)
+                                                    #ex:Africa/Tunis (should be the same on your DB (postgressdb))
+                                                </p>
+                                                <separator></separator>
+                                                <p style="font-weight: bold;">parameters => { "favorite_artist" =>
+                                                    "Beethoven" }
+                                                    statement => "SELECT * from songs where artist = :favorite_artist"
+                                                </p>
+                                                <separator></separator>
+                                                <p style="font-weight: bold;">This link can be very helpful !!
+                                                    <a href="https://www.elastic.co/guide/en/logstash/current/plugins-inputs-jdbc.html"
+                                                       target="new">Jdbc input plugin
+                                                    </a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree SQL QUERY -->
+        <record model="ir.ui.view" id="logstash_config_tree">
+            <field name="name">logstash.config.tree</field>
+            <field name="model">logstash.config</field>
+            <field name="arch" type="xml">
+                <tree string=" SQL QUERY">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="index"/>
+                    <field name="user_id"/>
+                    <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!--View Kanban Logstash -->
+
+        <record id="logstash_config_kanban" model="ir.ui.view">
+            <field name="name">logstash.config.kanban</field>
+            <field name="model">logstash.config</field>
+            <field name="priority" eval="1"/>
+            <field name="arch" type="xml">
+                <kanban quick_create_view="False" archivable="false">
+                    <field name="color"/>
+                    <field name="tag_ids"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="#{kanban_color(record.color.raw_value)} oe_kanban_global_click">
+                                <div class="o_dropdown_kanban dropdown">
+                                    <a class="dropdown-toggle o-no-caret btn" role="button" data-toggle="dropdown"
+                                       href="#"
+                                       aria-label="Dropdown menu" title="Dropdown menu">
+                                        <span class="fa fa-ellipsis-v"/>
+                                    </a>
+
+                                    <div class="dropdown-menu" role="menu">
+                                        <ul class="oe_kanban_colorpicker" data-field="color"/>
+                                    </div>
+                                </div>
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top mb16">
+                                        <div class="o_kanban_record_headings mt4">
+                                            <strong class="o_kanban_record_title">
+                                                <span>
+                                                    <field name="name"/>
+                                                </span>
+                                                <br></br>
+                                            </strong>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <span class="o_kanban_record_subtitle">
+                                            <span>
+                                                <i class="fa fa-check" role="img" title="Main"/>
+                                                <field name="index"/>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="state" widget="label_selection"
+                                           options="{'classes': {'draft': 'default', 'confirm': 'primary', 'validate': 'success'}}"/>
+                                </div>
+
+                                <div class="oe_clear"></div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+
+        <!--Action backend Dashboard-->
+        <record id="action_logstash_config" model="ir.actions.act_window">
+            <field name="name">Logstash Config</field>
+            <field name="res_model">logstash.config</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'kanban', 'view_id': ref('logstash_config_kanban')}),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('logstash_config_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('logstash_config_form')})]"/>
+        </record>
+
+        <menuitem name="All Indexes" id="elasticsearch_index_menu_item" sequence="2"
+                  parent="elastick_stack_connector.elasticsearch_menu"
+                  action="action_logstash_config"/>
+
+
+        <record id="action_validate_index" model="ir.actions.act_window">
+            <field name="name">Indexes in Kibana</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">logstash.config</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="context">{'create': False}</field>
+            <field name="domain">[('state','=','validate')]</field>
+            <!-- <field name="search_view_id" ref="view_sales_order_filter"/>-->
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No indexes to validate found
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_validate_index"
+                  name="Kibana"  groups="elastick_stack_connector.elk_group_user"
+                  parent="elastick_stack_connector.menu_elastic_root"
+                  sequence="2"/>
+
+
+        <menuitem id="menu_index_in_kibana"
+                  action="elastick_stack_connector.action_validate_index"
+                  parent="elastick_stack_connector.menu_validate_index"
+                  sequence="2"/>
+
+
+        <record id="action_index_to_validate" model="ir.actions.act_window">
+            <field name="name">Indexes To Validate</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">logstash.config</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="context">{'create': False}</field>
+            <field name="domain">[('state','=','confirm')]</field>
+            <!-- <field name="search_view_id" ref="view_sales_order_filter"/>-->
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No indexes to validate found
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_index_to_validate"
+                  action="elastick_stack_connector.action_index_to_validate"
+                  parent="elastick_stack_connector.elasticsearch_menu"
+                  sequence="3"/>
+
+
+    </data>
+
+</odoo>

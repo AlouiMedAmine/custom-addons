@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_log_info" model="ir.ui.view">
+        <field name="name">log.info.form</field>
+        <field name="model">log.info</field>
+        <field name="arch" type="xml">
+            <form string="Import module">
+                <separator string="Logs From Your Remote Server" colspan="4"/>
+                <group>
+                    <field name="log_info" nolabel="1"  readonly="1" style="background-color: #eee"/>
+                </group>
+                <footer>
+                    <div>
+                        <button special="cancel" string="Cancel" class="btn-secondary"/>
+                    </div>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_view_log_info" model="ir.actions.act_window">
+        <field name="name">Import Module</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">log.info</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+</odoo>
+

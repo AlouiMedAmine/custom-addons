@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_upload_postgresql" model="ir.ui.view">
+        <field name="name">jdbc.postgresql.import.form</field>
+        <field name="model">jdbc.postgresql.import</field>
+        <field name="arch" type="xml">
+            <form string="Upload Postgresql">
+                <separator string="Download &amp; Upload PostgreSQL JDBC Driver width SFTP connection" colspan="4"/>
+                <group>
+                    <group>
+                        <label for="url" string="download PostgreSQL JDBC Driver" colspan="2"/>
+                        <span class="o_document_url">
+                            <field name="url" widget="url"/>
+                            <i class="fa fa-globe"/>
+                        </span>
+
+                    </group>
+                    <group>
+                        <label for="module_file"
+                               string="Upload PostgreSQL JDBC Driver in your remote server" colspan="2"/>
+                        <field name="path"/>
+                        <field name="filename" invisible="1"/>
+                        <field name="module_file" widget="binary" filename="filename" colspan="2"/>
+
+                    </group>
+                </group>
+
+                <footer>
+                    <div>
+                        <button name="import_module" string="Upload" type="object" class="btn-primary"/>
+                        <button special="cancel" string="Cancel" class="btn-secondary"/>
+                    </div>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_view_jdbc_postgresql_import" model="ir.actions.act_window">
+        <field name="name">Import JDBC</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">jdbc.postgresql.import</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+</odoo>
+

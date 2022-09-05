@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem id="menu_elastic_root" name="ELK" sequence="30"
+                  groups="elastick_stack_connector.elk_group_user,elastick_stack_connector.elk_group_manager"
+                  web_icon="elastick_stack_connector,static/description/icon.png"/>
+
+        <menuitem name="Indexes" id="elasticsearch_menu" sequence="1"
+                  groups="elastick_stack_connector.elk_group_user,elastick_stack_connector.elk_group_manager"
+                  parent="elastick_stack_connector.menu_elastic_root"/>
+
+        <menuitem id="menu_elk_config"
+                  name="Configuration"
+                  parent="elastick_stack_connector.menu_elastic_root"
+                  sequence="5" groups="elastick_stack_connector.elk_group_manager"
+        />
+
+    </data>
+</odoo>

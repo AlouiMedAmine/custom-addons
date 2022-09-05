@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.elasticsearch</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="100"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="ELK" string="ELK" data-key="elastick_stack_connector"
+                     groups="sales_team.group_sale_manager">
+                    <h2>Help</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="database_setting_help"/>
+                            </div>
+                            <div class="o_setting_right_pane" id="database_help_settings">
+                                <label string="Database" for="database_setting_help"/>
+                                <div class="text-muted">
+                                    Database setting help ?
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="elasticserver_setting_help"/>
+                            </div>
+                            <div class="o_setting_right_pane" id="elasticserver_settings">
+                                <label string="Elasticserver" for="elasticserver_setting_help"/>
+                                <div class="text-muted">
+                                    Elasticserver setting help ?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sql_query_help"/>
+                            </div>
+                            <div class="o_setting_right_pane" id="sql_query_settings">
+                                <label string="Sql query" for="sql_query_help"/>
+                                <div class="text-muted">
+                                    Sql query help?
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="index_setting_help"/>
+                            </div>
+                            <div class="o_setting_right_pane" id="index_settings">
+                                <label string="Logstash pipeline" for="index_setting_help"/>
+                                <div class="text-muted">
+                                    index settings help ?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="business_documents">
+                        <h2>Indexes</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_left_pane">
+                                    <field name="is_tracking_column"/>
+                                </div>
+                                <div class="o_setting_right_pane" id="index_settings">
+                                    <label string="Activate tracking column" for="is_tracking_column"/>
+                                </div>
+                                <div class="o_setting_right_pane"
+                                     attrs="{'invisible': [('is_tracking_column', '!=', True)]}">
+                                    <div class="text-muted">
+                                        use_column_value
+                                    </div>
+                                    <div class="content-group">
+                                        <div class="mt16 row">
+                                            <label for="use_column_value" string="Use Column"
+                                                   class="col-3 col-lg-3 o_light_label"/>
+                                            <field name="use_column_value" class="oe_inline"
+                                                   attrs="{'required': [('is_tracking_column', '=', True)]}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="o_setting_right_pane"
+                                     attrs="{'invisible': [('is_tracking_column', '!=', True)]}">
+                                    <div class="text-muted">
+                                        tracking_column_type
+                                    </div>
+                                    <div class="content-group">
+                                        <div class="mt16 row">
+                                            <label for="tracking_column_type" string="Column Type"
+                                                   class="col-3 col-lg-3 o_light_label"/>
+                                            <field name="tracking_column_type" class="oe_inline" placeholder="timestamp"
+                                                   attrs="{'required': [('is_tracking_column', '=', True)]}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="o_setting_right_pane"
+                                     attrs="{'invisible': [('is_tracking_column', '!=', True)]}">
+                                    <div class="text-muted">
+                                        tracking_column
+                                    </div>
+                                    <div class="content-group">
+                                        <div class="mt16 row">
+                                            <label for="tracking_column" string="Column"
+                                                   class="col-3 col-lg-3 o_light_label"/>
+                                            <field name="tracking_column" class="oe_inline" placeholder="write_date"
+                                                   attrs="{'required': [('is_tracking_column', '=', True)]}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                                          aria-label="Values set here are company-specific."
+                                          role="img"/>
+                                    <span class="o_form_label">Schedule</span>
+                                    <div class="text-muted">
+                                        Set a default schedule for indexes
+                                        <br/>
+                                        e.g. 0 * * * * (every hours)
+                                        or * * * * * (every seconds)
+                                    </div>
+                                    <div class="content-group">
+                                        <div class="mt16">
+                                            <label for="tracking_column_type" string="Schedule"
+                                                   class="col-3 col-lg-3 o_light_label"/>
+                                            <field name="schedule" placeholder="0 * * * *" width="50%"
+                                                   class="oe_inline"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="models_info">
+                        <h2>Models and fields</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <span class="o_form_label">Show menu</span>
+                                    <div class="text-muted">
+                                        Fields can be used in statment
+                                    </div>
+                                    <div class="content-group">
+                                        <div class="mt16">
+                                            <label for="group_show_fields" string="Menu fields"
+                                                   class="col-3 col-lg-3 o_light_label"/>
+                                            <field name="group_show_fields" placeholder="100" class="oe_inline"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box" attrs="{'invisible': [('group_show_fields', '!=', True)]}">
+                                <div class="o_setting_right_pane">
+                                    <span class="o_form_label">Models</span>
+                                    <div class="text-muted">
+                                        Show fields for this models
+                                    </div>
+                                    <div class="content-group">
+                                        <div class="mt16 row">
+                                            <label for="model_ids" string="Models"
+                                                   class="col-3 col-lg-3 o_light_label"/>
+                                            <field name="model_ids" widget="many2many_tags"
+                                                  options="{'no_create_edit': True}"
+                                                   class="oe_inline" placeholder=""/>
+                                            <br></br>
+                                            <br></br>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="logs_info">
+                        <h2>Logs info</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <span class="o_form_label">Size</span>
+                                    <div class="text-muted">
+                                        Size (bytes),when run this cmd
+                                        <br/>
+                                        bin/logstash -f PathConfigFile (button:Run Logstash Test)
+                                    </div>
+                                    <div class="content-group">
+                                        <div class="mt16 row">
+                                            <label for="tracking_column_type" string="Size"
+                                                   class="col-3 col-lg-3 o_light_label"/>
+                                            <field name="size_logfile" class="oe_inline" placeholder="timestamp"/>
+                                            <span>bytes</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <span class="o_form_label">Number of lines</span>
+                                    <div class="text-muted">
+                                        Nb lines ,when run this cmd
+                                        <br/>
+                                        tail -NBlinges PathLogFile (button:Log)
+                                    </div>
+                                    <div class="content-group">
+                                        <div class="mt16">
+                                            <label for="tracking_column_type" string="Nb lignes"
+                                                   class="col-3 col-lg-3 o_light_label"/>
+                                            <field name="nb_ligne_logfile" placeholder="100" class="oe_inline"/>
+                                            <span>lines</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_elk_config_settings" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="res_config_settings_view_form"/>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'elastick_stack_connector'}</field>
+    </record>
+
+
+    <menuitem id="menu_elk_general_settings"
+              name="Settings"
+              parent="elastick_stack_connector.menu_elk_config"
+              sequence="0"
+              action="action_elk_config_settings"
+              groups="base.group_system"/>
+
+</odoo>

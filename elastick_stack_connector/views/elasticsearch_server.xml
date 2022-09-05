@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- View Form elasticsearch_server -->
+        <record model="ir.ui.view" id="elasticsearch_server_form">
+            <field name="name">elasticsearch.server.form</field>
+            <field name="model">elasticsearch.server</field>
+            <field name="arch" type="xml">
+                <form string="ElasticSearch Server">
+                    <header>
+                        <button string="Test &amp; Confirm" type="object" name="action_confirm"
+                                states="draft"/>
+                        <button string="Reset Confirmation" type="object" name="action_draft" states="confirm"/>
+                        <button string="Help ?" type="object" name="action_need_help"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <widget name="web_ribbon" text="Archived" bg_color="bg-danger"
+                                    attrs="{'invisible': [('active', '=', True)]}"/>
+                        </div>
+
+                        <field name="is_success" invisible="1"></field>
+                        <field name="is_defined_last_run" invisible="1"></field>
+                        <field name="is_defined_sftp_jdbc_path" invisible="1"></field>
+                        <field name="is_sftp_path" invisible="1"></field>
+                        <field name="is_sftp_logstash_bin_path" invisible="1"></field>
+                        <field name="is_sftp_logstash_log_path" invisible="1"></field>
+                        <field name="check_access" invisible="1"></field>
+
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="alert alert-info" role="alert"
+                                     attrs="{'invisible': [('is_success', '!=', True)]}">
+                                    <b>
+                                        <i class="fa fa-fw o_button_icon fa-check text-success"></i>
+                                        SFTP Connection Success
+                                        <br/>
+                                    </b>
+                                </div>
+
+                                <div class="alert alert-info" role="alert"
+                                     attrs="{'invisible': ['|',('is_defined_sftp_jdbc_path', '!=', True),('check_access', '!=', True)]}">
+                                    <b>
+                                        <i class="fa fa-fw o_button_icon fa-check text-success"></i>
+                                        PostgreSQL JDBC Driver is defined
+                                        <br/>
+                                    </b>
+                                </div>
+                                <div class="alert alert-info" role="alert"
+                                     attrs="{'invisible': ['|',('is_defined_sftp_jdbc_path', '!=', False),('check_access', '!=', True)]}">
+                                    <b>
+                                        <i class="fa fa-fw o_button_icon fa-check text-success"></i>
+                                        PostgreSQL JDBC Driver is uploaded
+                                        <br/>
+                                    </b>
+                                </div>
+                                <div class="alert alert-info" role="alert"
+                                     attrs="{'invisible': [('is_defined_last_run', '!=', True)]}">
+                                    <b>
+                                        <i class="fa fa-fw o_button_icon fa-check text-success"></i>
+                                        last run metadata is defined
+                                        <br/>
+                                    </b>
+                                </div>
+                               <!-- <div class="alert alert-info" role="alert"
+                                     attrs="{'invisible': [('is_defined_last_run', '!=', False)]}">
+                                    <b>
+                                        <i class="fa fa-fw o_button_icon fa-check text-success"></i>
+                                        last run metadata is created
+                                        <br/>
+                                    </b>
+                                </div>-->
+                            </div>
+
+
+                            <div class="col-12 col-lg-6 o_setting_box"
+                                 attrs="{'invisible': [('check_access', '!=', True)]}">
+                                <div class="alert alert-info" role="alert"
+                                     attrs="{'invisible': [('is_sftp_path', '!=', True)]}">
+                                    <b>
+                                        <i class="fa fa-fw o_button_icon fa-check text-success"></i>
+                                        Path configuration file is defined
+                                        <br/>
+                                    </b>
+                                </div>
+                                <div class="alert alert-info" role="alert"
+                                     attrs="{'invisible': [('is_sftp_logstash_bin_path', '!=', True)]}">
+                                    <b>
+                                        <i class="fa fa-fw o_button_icon fa-check text-success"></i>
+                                        Path binary scripts is defined
+                                        <br/>
+                                    </b>
+                                </div>
+                                <div class="alert alert-info" role="alert"
+                                     attrs="{'invisible': [('is_sftp_logstash_log_path', '!=', True)]}">
+                                    <b>
+                                        <i class="fa fa-fw o_button_icon fa-check text-success"></i>
+                                        Path Log file is defined
+                                        <br/>
+                                    </b>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" required="1" placeholder="e.g. My Elastic Server "/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group>
+                                <field name="active" invisible="1"/>
+                                <separator col="2" string="SFTP"/>
+                                <field name="sftp_host" required="1"
+                                />
+                                <field name="sftp_port" required="1"
+                                />
+                                <field name="sftp_user" required="1"
+                                />
+                                <field name="sftp_password" required="1"
+                                       password="True"/>
+
+                                <separator col="2" string="Set Up Logstash"/>
+                                <field name="sftp_logstash_bin_path"
+                                       placeholder="/usr/share/logstash/bin" required="1"/>
+                                <field name="sftp_path"
+                                       placeholder="../etc/logstash/conf.d/" required="1"/>
+
+                                <field name="sftp_last_run_metadata_path"
+                                       placeholder="../etc/logstash/lastrun/"/>
+
+                                <field name="sftp_logstash_log_path"
+                                       placeholder="/var/log/logstash/logstash-plain.log"/>
+
+                                <label for="sftp_jdbc_driver_library_path"/>
+                                <div class="o_row">
+                                    <field name="sftp_jdbc_driver_library_path"
+                                           placeholder="../etc/logstash/postgresql/postgresql-42.2.12.jar" />
+                                </div>
+                                <button
+                                        type="object"
+                                        name="import_jdbc_postgresql"
+                                        class="fa fa-upload" string="Upload jdbc library"
+                                        aria-label="Upload"
+                                        title="postgresql-42.2.12.jar"
+                                />
+                                <br></br>
+                                <separator col="2" string="Set Up Elasticsearch"/>
+
+                                <field name="elastic_url" widget="url" placeholder="yourHost:9200" required="1"/>
+
+                                <separator col="2" string="Set Up Kibana"/>
+
+                                <field name="kibana_url" widget="url" placeholder="yourHost:5601" required="1"/>
+
+                                <separator col="2" string="Set up X-Pack"/>
+
+                                <field name="elastic_login" required="1"></field>
+                                <field name="elastic_password" required="1" type="password"></field>
+                                <field name="require_elasticserver_help" invisible="1"></field>
+
+                                <field name="note" invisible="1"></field>
+
+                                <separator></separator>
+                                <separator></separator>
+
+                                <button name="test_sftp_connection" type="object"
+                                        string="Test SFTP Con"/>
+                                <button name="test_access_file" type="object"
+                                        string="Test Accees Path"/>
+                            </group>
+                            <group attrs="{'invisible':[('require_elasticserver_help', '!=', True)]}">
+                                <div class="row">
+                                    <div class="col-lg-11 offset-lg-1 col-md-12 no-margin-top"
+                                         style="background-color: #eee">
+                                        <p class="text-center" style="font-weight: bold;">Help To install ELK
+                                        </p>
+
+                                        <div>
+                                            <div class="oe_account_help">
+
+                                                <p class="text-left">
+                                                    ELK is the combination of three open source projects:
+                                                    Elasticsearch, Logstash, Kibana and Filebeat.
+                                                    Elasticsearch is a search and analytics engine.
+                                                    Logstash is a server‑side logs processing pipeline that transport
+                                                    logs from multiple sources simultaneously, transforms it, and then
+                                                    sends it to a “stash” like Elasticsearch. Kibana is to visualize
+                                                    logs with charts and graphs from Elasticsearch.
+                                                </p>
+                                                <separator></separator>
+                                                <p>
+                                                    WorkFlow = ElasticSearch —> Kibana —> Logstash
+                                                    —> Filebeat
+                                                </p>
+                                                <separator></separator>
+                                                <p>
+                                                    How to Install ELK Stack on Ubuntu 18.04/16.04 LTS
+                                                    <separator></separator>
+                                                    <a href="https://www.fosstechnix.com/install-elk-stack-on-ubuntu/"
+                                                       target="new">install-elk-stack-on-ubuntu
+                                                    </a>
+                                                </p>
+                                                <separator></separator>
+                                                <p class="text-left">
+                                                    Set Up X-Pack for the Elastic Stack
+                                                    X-Pack is an Elastic Stack extension that provides security,
+                                                    alerting, monitoring, machine learning, pipeline management, and
+                                                    many other capabilities. By default, when you install Logstash,
+                                                    X-Pack is installed.
+
+                                                </p>
+                                                <separator></separator>
+                                                1) ## log in your elasticsearch.yml ##
+                                                <separator></separator>
+                                                vi /etc/elasticsearch/elasticsearch.yml
+                                                <separator></separator>
+                                                2) ## add ###
+                                                <separator></separator>
+                                                xpack.security.enabled: true
+                                                <separator></separator>
+                                                3) restart elasticsearch
+                                                <separator></separator>
+                                                sudo systemctl restart elasticsearch
+                                                <separator></separator>
+                                                <separator></separator>
+                                                4) Set the built-in users' passwords.
+                                                <separator></separator>
+                                                /usr/share/elasticsearch/bin/elasticsearch-setup-passwords interactive
+
+                                                Note :
+                                                <separator></separator>
+                                                * You need these built-in users in subsequent steps, so choose
+                                                passwords that you can remember!
+                                                <separator></separator>
+                                                * it can be better to use the same password for all users
+
+                                                <separator></separator>
+                                                5) ## add username/password on kibana ,the same user and password for
+                                                cmd (4)###
+                                                <separator></separator>
+                                                vi /etc/kibana/kibana.yaml
+                                                <separator></separator>
+                                                ## look for username and password
+                                                <separator></separator>
+                                                elasticsearch.username: "xxxx"
+                                                <separator></separator>
+                                                elasticsearch.password: "xxxx"
+                                                <separator></separator>
+                                                7) ## restart kibana ##
+                                                <separator></separator>
+                                                sudo systemctl restart kibana
+                                                <separator></separator>
+                                                <p class="text-left">User it 'll be
+                                                    used on the connection
+                                                    otput section
+                                                </p>
+                                                <separator></separator>
+
+                                                <p class="text-left">
+                                                    output {
+                                                    elasticsearch {
+                                                    user => xxxxx
+                                                    password => xxxxx
+                                                    }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <p class="text-center" style="font-weight: bold;">Help To Settings ELK
+                                        </p>
+                                        <p class="text-center" style="font-weight: bold;">Logstash
+                                        </p>
+                                        <p style="background-color: #eee">
+                                            1) /etc/logstash/logstash.yml
+                                            <br/>
+                                            # ------------ Pipeline Configuration Settings --------------
+                                            <br/>
+                                            #
+                                            <br/>
+                                            # Where to fetch the pipeline configuration for the main pipeline
+                                            <br/>
+                                            #
+                                            <br/>
+                                            path.config: /etc/logstash/conf.d/*
+                                            <br/>
+                                            # Periodically check if the configuration has changed and reload the
+
+                                            pipeline
+                                            <br/>
+                                            # This can also be triggered manually through the SIGHUP signal
+                                            <br/>
+                                            #
+                                            <br/>
+                                            config.reload.automatic: true
+                                            <br/>
+                                            #
+                                            <br/>
+                                            # How often to check if the pipeline configuration has changed (in
+                                            seconds)
+                                            <br/>
+                                            #
+                                            <br/>
+                                            #config.reload.interval: 3s
+                                            <br/>
+                                            2) add jdbc_driver_library in
+                                            /usr/share/logstash/logstash-core/lib/jars
+                                            <br/>Why ???
+                                            <br/>
+                                            3) when we run the test :
+                                            <br/>
+                                            this should be defined
+                                            jdbc_driver_library => "../../postgresql-42.2.12.jar"
+                                            <br/>
+                                            when we make this index.conf in conf.d ,logstash service don't accept
+                                            external file , for this reason we comment #jdbc_driver_library
+                                            <br/>
+                                            Logstash detetct this pluguin from
+                                            <br/>
+                                            /usr/share/logstash/logstash-core/lib/jars
+
+                                        </p>
+                                    </div>
+                                </div>
+                            </group>
+                        </group>
+
+
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree SQL QUERY -->
+        <record model="ir.ui.view" id="elasticsearch_server_tree">
+            <field name="name">elasticsearch.server.tree</field>
+            <field name="model">elasticsearch.server</field>
+            <field name="arch" type="xml">
+                <tree string=" SQL QUERY">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="state"/>
+                    <field name="sftp_host"/>
+                </tree>
+            </field>
+        </record>
+
+        <!--Action backend Dashboard-->
+        <record id="action_elasticsearch_server" model="ir.actions.act_window">
+            <field name="name">Elastic Server</field>
+            <field name="res_model">elasticsearch.server</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('elasticsearch_server_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('elasticsearch_server_form')})]"/>
+        </record>
+
+
+        <menuitem name="Elastic Servers" id="elasticsearch_server_menu_item" sequence="6"
+                  parent="elastick_stack_connector.menu_elk_config"
+                  action="action_elasticsearch_server"/>
+
+
+    </data>
+</odoo>

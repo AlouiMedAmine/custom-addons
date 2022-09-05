@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sql_query,sql.query,model_sql_query,base.group_user,1,1,1,1
+access_elasticsearch_server,elasticsearch.server,model_elasticsearch_server,base.group_user,1,1,1,1
+access_logstash_config,logstash.config,model_logstash_config,base.group_user,1,1,1,1
+access_database_config,database.config,model_database_config,base.group_user,1,1,1,1
+access_logstash_tag,logstash.tag,model_logstash_tag,base.group_user,1,1,1,1
+access_log_info,access.log.info,model_log_info,base.group_user,1,1,1,1
+access_jdbc_postgresql_import,jdbc.postgresql.import,model_jdbc_postgresql_import,base.group_user,1,1,1,1

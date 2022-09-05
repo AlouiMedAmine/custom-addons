@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- View Form DataBase Config -->
+        <record model="ir.ui.view" id="database_config_form">
+            <field name="name">database.config.form</field>
+            <field name="model">database.config</field>
+            <field name="arch" type="xml">
+                <form string="DataBase Config">
+                    <header>
+                        <button string="Test &amp; Confirm" type="object" name="action_confirm"
+                                states="draft"/>
+                        <button string="Reset Confirmation" type="object" name="action_draft" states="confirm"/>
+                        <button string="Help ?" type="object" name="action_need_help"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <widget name="web_ribbon" text="Archived" bg_color="bg-danger"
+                                    attrs="{'invisible': [('active', '=', True)]}"/>
+                        </div>
+                        <div class="alert alert-info" role="alert" attrs="{'invisible': [('is_success', '!=', True)]}">
+                            <b attrs="{'invisible': [('is_success', '!=', True)]}">
+                                <i class="fa fa-fw o_button_icon fa-check text-success"></i>
+                                Database settings Success
+                                <br/>
+                            </b>
+                        </div>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" required="1" placeholder="e.g. My current db "/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="current_db"/>
+                                <separator></separator>
+                                <field name="jdbc_driver_class"/>
+                                <separator></separator>
+                                <field name="jdbc_connection_string"/>
+                                <separator></separator>
+                                <field name="jdbc_user"/>
+                                <separator></separator>
+                                <field name="jdbc_password" password="True"/>
+                                <separator></separator>
+                                <field name="jdbc_paging_enabled"/>
+                                <separator></separator>
+                                <field name="jdbc_page_size"/>
+                                <separator></separator>
+                                <field name="jdbc_default_timezone"/>
+                                <field name="active" invisible="1"/>
+                                <field name="require_database_help" invisible="1"/>
+                                <field name="is_success" invisible="1"/>
+                            </group>
+
+                            <group>
+                                <div class="row" attrs="{'invisible':[('require_database_help', '!=', True)]}">
+                                    <div class="col-lg-11 offset-lg-1 col-md-12 no-margin-top"
+                                         style="background-color: #eee">
+                                        <p class="text-center" style="font-weight: bold;">Help Jdbc settings
+                                        </p>
+                                        <separator></separator>
+                                        <separator></separator>
+                                        <div>
+                                            <div class="oe_account_help">
+                                                <p class="text-left" style="font-weight: bold;">(1)jdbc_driver_library
+                                                    =>
+                                                    "../../postgresql-42.2.12.jar"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">(2)jdbc_driver_class =>
+                                                    "org.postgresql.Driver"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">
+                                                    (3)jdbc_connection_string
+                                                    => "jdbc:postgresql://Host:5432/BaseName"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">(4)jdbc_user => "xxxx"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">(5)jdbc_password =>
+                                                    "xxxx"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">(6)jdbc_paging_enabled
+                                                    =>
+                                                    "true"
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">(7)jdbc_page_size =>
+                                                    50000
+                                                </p>
+                                                <p class="text-left" style="font-weight: bold;">(8)jdbc_default_timezone
+                                                    =>
+                                                    "TimeZone"
+                                                </p>
+                                                <p>--------------------------------------------------</p>
+                                                <p>(1)this config should be on Your ElasticNoeud</p>
+                                                <br></br>
+                                                <p>(2) Driver Java Class Name for Mysql : com.mysql.jdbc.Driver</p>
+                                                <br></br>
+                                                <p>(3)NOTE: Postgress Default server port is 5432
+                                                    example for Mysql =>
+                                                    jdbc:mysql://server-name:server-port/database-name
+                                                    NOTE: Mysql Default server port is 3306
+                                                </p>
+                                                <br></br>
+                                                <p>(4)Login name of the account used to access the database.
+                                                    Note: db_user in your odoo.conf
+                                                </p>
+                                                <br></br>
+                                                <p>(5)Password associated with the login account name used to connect to
+                                                    the database.
+                                                    Note: db_password in your odoo.conf
+                                                </p>
+                                                <br></br>
+                                                <p>(6),(8) Building count queries around a prepared statement is not
+                                                    supported at this time and because jdbc paging uses count queries
+                                                    under the hood, jdbc paging is not supported with prepared
+                                                    statements at this time either. Therefore, jdbc_paging_enabled,
+                                                    jdbc_page_size settings are ignored when using prepared statements.
+                                                </p>
+                                                <br></br>
+                                                <p>(8)When you create your index, you should have the same timezone
+                                                    jdbc_default_timezoneedit
+                                                    Value type is string
+                                                    There is no default value for this setting.
+                                                    Timezone conversion. Logstash (and Elasticsearch) expects that
+                                                    timestamps are expressed in UTC terms. If your database has recorded
+                                                    timestamps that are relative to another timezone, the database
+                                                    timezone if you will, then set this setting to be the timezone that
+                                                    the database is using. However, as SQL does not allow for timezone
+                                                    data in timestamp fields we can’t figure this out on a record by
+                                                    record basis. This plugin will automatically convert your SQL
+                                                    timestamp fields to Logstash timestamps, in relative UTC time in
+                                                    ISO8601 format.
+                                                </p>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </group>
+                        </group>
+
+
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree DataBase Config -->
+        <record model="ir.ui.view" id="database_config_tree">
+            <field name="name">database.config.tree</field>
+            <field name="model">database.config</field>
+            <field name="arch" type="xml">
+                <tree string=" SQL QUERY">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="jdbc_user"/>
+                    <field name="jdbc_driver_class"/>
+                    <field name="active" invisible="1"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!--Action DataBase Config-->
+        <record id="action_database_config" model="ir.actions.act_window">
+            <field name="name">DataBase Config</field>
+            <field name="res_model">database.config</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('database_config_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('database_config_form')})]"/>
+        </record>
+
+        <!-- Menu DataBase Config -->
+        <menuitem name="DataBases" id="database_config_menu_item" sequence="1"
+                  parent="elastick_stack_connector.menu_elk_config"
+                  action="action_database_config"/>
+
+
+    </data>
+</odoo>

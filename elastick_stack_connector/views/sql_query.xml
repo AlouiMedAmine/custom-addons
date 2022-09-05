@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- View Form sql_query -->
+        <record model="ir.ui.view" id="sql_query_form">
+            <field name="name">sql.query.form</field>
+            <field name="model">sql.query</field>
+            <field name="arch" type="xml">
+                <form string="sql query">
+                    <header>
+                        <button string="Test &amp; Confirm" type="object" name="action_confirm"
+                                states="draft"/>
+                        <button string="Reset Confirmation" type="object" name="action_draft" states="confirm"/>
+                        <button string="Help ?" type="object" name="action_need_help"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <widget name="web_ribbon" text="Archived" bg_color="bg-danger"
+                                    attrs="{'invisible': [('active', '=', True)]}"/>
+                        </div>
+                        <div class="alert alert-info" role="alert" attrs="{'invisible': [('is_success', '!=', True)]}">
+                            <b attrs="{'invisible': [('is_success', '!=', True)]}">
+                                <i class="fa fa-fw o_button_icon fa-check text-success"></i>
+                                Query Success
+                                <br/>
+                            </b>
+                        </div>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" required="1" placeholder="e.g. Statment for Pipline(crm.lead) "/>
+                            </h1>
+                        </div>
+
+                        <group>
+                            <group>
+                                <field name="model_id" domain="[('id','in',restricted_model_ids)]"  options="{'no_create_edit': True}"/>
+                            </group>
+                            <group>
+                            </group>
+                        </group>
+                        <group>
+                            <group name="query">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 no-margin-top">
+                                        <span>
+                                            <separator string="SQL"/>
+                                            <field name="is_success" invisible="1"/>
+                                            <button style="background-color: #eee"
+                                                    string="Execute Only Select Query"
+                                                    name="execute_qry"
+                                                    colspan="1"
+                                                    icon="fa-check"
+                                                    type="object"
+                                                    attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                                            <button style="background-color: #eee"
+                                                    string="Clear Result"
+                                                    name="clear_result"
+                                                    colspan="1" icon="fa-trash-o"
+                                                    type="object"
+                                                    attrs="{'invisible': [('state', '!=', 'draft')]}"/><!-- icon='fa-broom' -->
+
+                                        </span>
+                                        <separator></separator>
+                                        <field name="query" style="background-color: #eee" nolabel="1"/>
+                                        <field name="active" invisible="1"></field>
+                                        <field name="require_query_help" invisible="1"></field>
+
+                                        <br></br>
+                                    </div>
+                                </div>
+                            </group>
+                            <group name="sql_help" string="All stored fields except (M2M,O2M,Binary)">
+
+                                <div class="row">
+                                    <div class="col-lg-11 offset-lg-1 col-md-12 no-margin-top">
+                                        <label for="all_fields" string="All stored fields"></label>
+                                        <field name="all_fields" nolabel="1"/>
+                                        <separator></separator>
+                                        <label for="field_ids" string="Stored fields"
+                                               attrs="{'invisible':[('all_fields','=',True)]}"/>
+                                        <field name="field_ids" widget="many2many_tags" nolabel="1"
+                                               domain="[('model_id','=',model_id),('store','=',True),('ttype','not in',('one2many','many2many','binary'))]"></field>
+                                        <field name="restricted_model_ids" invisible="1"></field>
+                                    </div>
+
+                                    <div class="col-lg-11 offset-lg-1 col-md-12 no-margin-top"
+                                         attrs="{'invisible':[('require_query_help', '!=', True)]}"
+                                         style="background-color: #eee">
+                                        <p class="text-center" style="font-weight: bold;">SQL Help</p>
+                                        <separator></separator>
+                                        <separator></separator>
+                                        <p class="text-left" style="font-weight: bold;">This workflow used only to
+                                            validate the statement before we used on
+                                            elasticsearch connection, it's used to minimize bugs as possible.
+                                        </p>
+                                        <p class="text-left" style="font-weight: bold;">To have only 10 records, add
+                                            this line at the end of your query ==>
+                                            limit 10
+                                        </p>
+                                        <separator></separator>
+                                        <p class="text-left" style="font-weight: bold;">
+                                            (1)TimeZone ==> show timezone;
+                                        </p>
+                                        <p class="text-left" style="font-weight: bold;">
+                                            (2)Find Users in PostgreSQL ==> select usesysid as user_id, usename as
+                                            username, usesuper as is_superuser,
+                                            passwd as password_md5, valuntil as password_expiration
+                                            from pg_shadow order by usename;
+                                        </p>
+                                        <p class="text-left" style="font-weight: bold;"></p>
+                                        <p class="text-left" style="font-weight: bold;">
+                                            (3)INNER JOIN Syntax ==> Note: The INNER JOIN keyword selects all rows from
+                                            both tables as long as there is a match between the columns. If there are
+                                            records in the "Orders" table that do not have matches in "Customers", these
+                                            orders will not be shown!
+                                            <separator></separator>
+                                            SELECT column_name(s)
+                                            FROM table1
+                                            INNER JOIN table2
+                                            ON table1.column_name = table2.column_name;
+
+                                            <separator></separator>
+                                            ex: crm_lead table and res_partner =>
+                                            SELECT partner.name as Customer,lead.name as LeadName , lead.type as Type
+                                            FROM crm_lead as lead INNER JOIN res_partner as partner ON lead.partner_id =
+                                            partner.id;
+                                        </p>
+                                    </div>
+                                </div>
+                            </group>
+                        </group>
+
+
+                        <group name="result">
+                            <separator string="Temporary Query result" colspan="2"/>
+                            <field name="result" nolabel="1"/>
+                        </group>
+                    </sheet>
+                    <!--<div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>-->
+                </form>
+            </field>
+        </record>
+
+        <!-- View Tree SQL QUERY -->
+        <record model="ir.ui.view" id="sql_query_tree">
+            <field name="name">sql.query.tree</field>
+            <field name="model">sql.query</field>
+            <field name="arch" type="xml">
+                <tree string=" SQL QUERY">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="query"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!--Action backend Dashboard-->
+        <record id="action_sql_query" model="ir.actions.act_window">
+            <field name="name">SQL</field>
+            <field name="res_model">sql.query</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('sql_query_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('sql_query_form')})]"/>
+        </record>
+
+        <!-- menu Config SQL -->
+
+        <menuitem id="menu_statement"
+                  name="Statements"
+                  groups="elastick_stack_connector.elk_group_user" parent="elastick_stack_connector.menu_elastic_root"
+                  sequence="3"/> <!--groups="sales_team.group -->
+
+
+        <menuitem name="Sql Query" id="sql_query_menu_item1" sequence="1"
+                  parent="elastick_stack_connector.menu_statement"
+                  action="action_sql_query"/>
+
+
+    </data>
+</odoo>

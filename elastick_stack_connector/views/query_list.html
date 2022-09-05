@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mon site de gestion de contact</title>
+</head>
+<body>
+     {% if type == 'success' %}
+            <table class="table table-hover table-sm table-pos-info">
+                <thead>
+                    <tr>
+                        {% for col in columns -%}
+                        <th> {{col}}</th>
+                        {%- endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for res in results -%}
+                         <tr>
+                             {% for info in res -%}
+                                  <td> {{info}}</td>
+                             {%- endfor %}
+                         </tr>
+                    {%- endfor %}
+                </tbody>
+            </table>
+
+     {% else %}
+          <p> {{empty_query}}</p>
+      {% endif %}
+<p>
+
+
+</p>
+</table>
+</body>
+</html>
